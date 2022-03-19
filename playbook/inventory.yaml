@@ -1,0 +1,4 @@
+---
+webservers:
+  hosts:
+    "{{ lookup('env', 'GHOST_SERVER_IP') }}"

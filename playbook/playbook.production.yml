@@ -1,7 +1,7 @@
 ---
 - hosts: all
   vars:
-    certbot_admin_email: "{{ lookup('env', 'GHOST_ALERT_EMAIL') }}"
+    certbot_admin_email: "{{ lookup('env', 'ALERT_EMAIL') }}"
     certbot_create_if_missing: true
     certbot_create_standalone_stop_services: []
     certbot_certs:

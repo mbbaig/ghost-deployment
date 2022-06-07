@@ -12,6 +12,37 @@
         strategy: "ip_hash" # "least_conn", etc.
         servers:
           - "localhost:2368"
+    nginx_extra_http_options: |
+      ##
+      # `gzip` Settings
+      ##
+
+      gzip on;
+      gzip_disable "msie6";
+
+      gzip_vary on;
+      gzip_proxied any;
+      gzip_comp_level 6;
+      gzip_buffers 16 8k;
+      gzip_http_version 1.1;
+      gzip_min_length 256;
+      gzip_types 
+        text/plain 
+        text/css 
+        application/json 
+        application/x-javascript 
+        text/xml 
+        application/xml 
+        application/xml+rss 
+        text/javascript 
+        application/vnd.ms-fontobject 
+        application/x-font-ttf 
+        font/opentype 
+        image/svg+xml 
+        image/x-icon;
+
+      ## Cache location
+      proxy_cache_path /tmp/nginx_ghost levels=1:2 keys_zone=ghostcache:600m max_size=100m inactive=24h;
     nginx_vhosts:
       - listen: "80"
         server_name: "hackandslash.blog"
@@ -22,7 +53,41 @@
         filename: "hackandslash.blog.443.conf"
         extra_parameters: |
           location / {
-            proxy_buffering    off;
+            proxy_set_header   X-Real-IP $remote_addr;
+            proxy_set_header   X-Scheme $scheme;
+            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header   Host $http_host;
+            proxy_set_header   X-Forwarded-Proto https;
+            proxy_pass         http://ghost;
+
+            # Remove cookies which are useless for anonymous visitor and prevent caching
+            proxy_ignore_headers Set-Cookie Cache-Control;
+            proxy_hide_header Set-Cookie;
+            # Add header for cache status (miss or hit)
+            add_header X-Cache-Status $upstream_cache_status;
+
+            proxy_cache ghostcache;
+
+            # Default TTL: 1 day
+            proxy_cache_valid 1d;
+            
+            # Cache 404 pages for 1h
+            proxy_cache_valid 404 1h;
+            
+            # use conditional GET requests to refresh the content from origin servers
+            proxy_cache_revalidate on;
+            proxy_buffering on;
+            
+            # Allows starting a background subrequest to update an expired cache item,
+            # while a stale cached response is returned to the client.
+            proxy_cache_background_update on;
+            
+            # Bypass cache for errors
+            proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+          }
+
+          # No cache + keep cookies for admin and previews
+          location ~ ^/(?:ghost|signout) { 
             proxy_set_header   X-Real-IP $remote_addr;
             proxy_set_header   X-Scheme $scheme;
             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;

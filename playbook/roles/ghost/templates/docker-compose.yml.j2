@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   ghost:
-    image: ghost:4.44-alpine
+    image: ghost:5.0.2
     restart: always
     depends_on:
       - db
@@ -26,8 +26,9 @@ services:
       mail__options__auth__pass: "{{ lookup('env', 'GHOST_MAIL_PASSWORD') }}"
       url: https://hackandslash.blog
   db:
-    image: mariadb:10.7
+    image: mysql:8.0-debian
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - "dbdata:/var/lib/mysql"
     environment:

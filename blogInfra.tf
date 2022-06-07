@@ -36,6 +36,20 @@ resource "digitalocean_droplet" "ghost_server" {
   tags = ["blog", "ghost"]
   droplet_agent = true
   graceful_shutdown = true
+  backups = true
+}
+
+resource "digitalocean_droplet" "ghost_server_2" {
+  image  = "ubuntu-20-04-x64"
+  name   = "ghost-server-2"
+  region = "tor1"
+  size   = "s-1vcpu-2gb"
+  monitoring = true
+  ssh_keys = [var.ssh_key_id]
+  tags = ["blog", "ghost"]
+  droplet_agent = true
+  graceful_shutdown = true
+  backups = true
 }
 
 resource "digitalocean_monitor_alert" "cpu_alert" {
@@ -47,6 +61,6 @@ resource "digitalocean_monitor_alert" "cpu_alert" {
   compare     = "GreaterThan"
   value       = 70
   enabled     = true
-  entities    = [digitalocean_droplet.ghost_server.id]
+  entities    = [digitalocean_droplet.ghost_server_2.id]
   description = "Alert about CPU usage"
 }

@@ -63,25 +63,18 @@
             # Remove cookies which are useless for anonymous visitor and prevent caching
             proxy_ignore_headers Set-Cookie Cache-Control;
             proxy_hide_header Set-Cookie;
+            
             # Add header for cache status (miss or hit)
             add_header X-Cache-Status $upstream_cache_status;
 
             proxy_cache ghostcache;
 
-            # Default TTL: 1 day
-            proxy_cache_valid 1d;
+            # Default TTL: 1 hour
+            proxy_cache_valid 1h;
             
-            # Cache 404 pages for 1h
-            proxy_cache_valid 404 1h;
-            
-            # use conditional GET requests to refresh the content from origin servers
-            proxy_cache_revalidate on;
-            proxy_buffering on;
-            
-            # Allows starting a background subrequest to update an expired cache item,
-            # while a stale cached response is returned to the client.
-            proxy_cache_background_update on;
-            
+            # Cache 404 pages for 1 minute
+            proxy_cache_valid 404 1m;
+
             # Bypass cache for errors
             proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
           }

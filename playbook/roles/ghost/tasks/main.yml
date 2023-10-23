@@ -1,8 +1,14 @@
 ---
 - name: Create docker-compose file
   template:
-    src:  docker-compose.yml.j2
+    src: docker-compose.yml.j2
     dest: /root/docker-compose.yml
 
 - name: Deploy Ghost stack
   command: docker-compose up -d
+
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true

@@ -1,4 +1,11 @@
 ---
+- name: Install cockpit and tuned
+  ansible.builtin.dnf:
+    name:
+      - cockpit
+      - tuned
+    state: latest
+
 - name: Create docker-compose file
   template:
     src: docker-compose.yml.j2

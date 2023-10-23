@@ -26,19 +26,6 @@ provider "digitalocean" {
   token = var.do_token
 }
 
-resource "digitalocean_droplet" "ghost_server_2" {
-  image  = "ubuntu-20-04-x64"
-  name   = "ghost-server-2"
-  region = "tor1"
-  size   = "s-1vcpu-2gb"
-  monitoring = true
-  ssh_keys = [var.ssh_key_id]
-  tags = ["blog", "ghost"]
-  droplet_agent = true
-  graceful_shutdown = true
-  backups = true
-}
-
 resource "digitalocean_droplet" "ghost_server_3" {
   image  = "fedora-38-x64"
   name   = "ghost-server-3"

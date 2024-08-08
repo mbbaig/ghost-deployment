@@ -1,6 +1,6 @@
 galaxy_info:
   author: Mohamed Baig
-  description: Uses Docker Compose to deploy Ghost bloggingn protocol
+  description: Uses Docker Compose to deploy Ghost blogging protocol
   company: Hack&Slash
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -14,9 +14,9 @@ galaxy_info:
   # - GPL-3.0-only
   # - Apache-2.0
   # - CC-BY-4.0
-  license: license (GPL-2.0-or-later, MIT, etc)
+  license: MIT
 
-  min_ansible_version: 2.9
+  min_ansible_version: "2.9"
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:
@@ -50,6 +50,5 @@ galaxy_info:
 dependencies:
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
   # if you add dependencies to this list.
-  - geerlingguy.certbot
-  - geerlingguy.docker
-  - geerlingguy.nginx
+  - role: geerlingguy.nginx
+  - role: geerlingguy.nodejs

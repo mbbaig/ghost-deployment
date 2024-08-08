@@ -1,0 +1,2 @@
+# User rules for ghostuser
+ghostuser ALL=(ALL) NOPASSWD:ALL

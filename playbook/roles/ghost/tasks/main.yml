@@ -1,21 +1,46 @@
 ---
-- name: Install cockpit and tuned
-  ansible.builtin.dnf:
-    name:
-      - cockpit
-      - tuned
-    state: latest
 
-- name: Create docker-compose file
-  template:
-    src: docker-compose.yml.j2
-    dest: /root/docker-compose.yml
+- name: Add the user 'ghostuser' with a specific uid and a primary group of 'sudo'
+  ansible.builtin.user:
+    name: ghostuser
+    group: sudo
 
-- name: Deploy Ghost stack
-  command: docker-compose up -d
+- name: Copy a new sudoers file into place, after passing validation with visudo
+  ansible.builtin.template:
+    src: 100-ghost-user
+    dest: /etc/sudoers.d/100-ghost-user
+    mode: '440'
 
-- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
-  ansible.posix.seboolean:
-    name: httpd_can_network_connect
-    state: true
-    persistent: true
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /var/www/hackandslash
+    owner: ghostuser
+    group: root
+    state: directory
+    mode: '755'
+
+- name: Install Ghost
+  become: true
+  become_user: ghostuser
+  ansible.builtin.shell: |
+    /usr/local/lib/npm/bin/ghost \
+      install 5.87.1 \
+      --no-prompt \
+      --dir /var/www/hackandslash \
+      --url https://hackandslash.blog \
+      --port 2368 \
+      --sslemail "{{ lookup('env', 'ALERT_EMAIL') }}" \
+      --db mysql \
+      --dbhost 10.137.0.3 \
+      --dbuser "{{ lookup('env', 'GHOST_DB_USER') }}" \
+      --dbpass "{{ lookup('env', 'GHOST_DB_PASSWORD') }}" \
+      --dbname ghost \
+      --mail SMTP \
+      --mailservice Mailgun \
+      --mailuser "{{ lookup('env', 'GHOST_MAIL_USER') }}" \
+      --mailpass "{{ lookup('env', 'GHOST_MAIL_PASSWORD') }}" \
+      --mailhost smtp.mailgun.org \
+      --mailport 465 \
+      --process systemd
+  args:
+    executable: /bin/bash

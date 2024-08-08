@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     digitalocean = {
-      source = "digitalocean/digitalocean"
-      version = "~> 2.29.0"
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.39.2"
     }
   }
 }
@@ -26,28 +26,44 @@ provider "digitalocean" {
   token = var.do_token
 }
 
-resource "digitalocean_droplet" "ghost_server_3" {
-  image  = "fedora-38-x64"
-  name   = "ghost-server-3"
-  region = "tor1"
-  size   = "s-1vcpu-2gb"
-  monitoring = true
-  ssh_keys = [var.ssh_key_id]
-  tags = ["blog", "ghost"]
-  droplet_agent = true
+resource "digitalocean_droplet" "ghost_server_4" {
+  image             = "ubuntu-24-04-x64"
+  name              = "ghost-server-4"
+  region            = "tor1"
+  size              = "s-1vcpu-1gb"
+  monitoring        = true
+  ssh_keys          = [var.ssh_key_id]
+  tags              = ["blog", "ghost"]
+  droplet_agent     = true
   graceful_shutdown = true
-  backups = false
+  backups           = false
+}
+
+resource "digitalocean_droplet" "ghost_db_1" {
+  image             = "ubuntu-24-04-x64"
+  name              = "ghost-db-1"
+  region            = "tor1"
+  size              = "s-1vcpu-1gb"
+  monitoring        = true
+  ssh_keys          = [var.ssh_key_id]
+  tags              = ["blog", "ghost", "db"]
+  droplet_agent     = true
+  graceful_shutdown = true
+  backups           = false
 }
 
 resource "digitalocean_monitor_alert" "cpu_alert" {
   alerts {
     email = [var.alert_email]
   }
-  window      = "5m"
-  type        = "v1/insights/droplet/cpu"
-  compare     = "GreaterThan"
-  value       = 70
-  enabled     = true
-  entities    = [digitalocean_droplet.ghost_server_3.id]
+  window  = "5m"
+  type    = "v1/insights/droplet/cpu"
+  compare = "GreaterThan"
+  value   = 70
+  enabled = true
+  entities = [
+    digitalocean_droplet.ghost_server_4.id,
+    digitalocean_droplet.ghost_db_1.id
+  ]
   description = "Alert about CPU usage"
 }

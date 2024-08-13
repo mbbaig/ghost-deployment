@@ -23,3 +23,7 @@ export DIGITAL_OCEAN_SSH_KEY_ID
    `ansible-galaxy install -r ./playbook/requirements.yaml`
 2. Run the playbook
    `ansible-playbook -u root -i "$GHOST_SERVER_IP," ./playbook/playbook.production.yaml`
+
+## Relevant blog posts
+1. [How I cut my cloud costs by 70%](https://hackandslash.blog/how-i-cut-my-cloud-costs-by-70-percent/)
+2. [How to deploy ghost using Ansible, Terraform, and Ghost CLI](https://hackandslash.blog/how-to-deploy-ghost-using-ansible-terraform-and-ghost-cli/)

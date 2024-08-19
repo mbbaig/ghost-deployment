@@ -27,3 +27,4 @@ export DIGITAL_OCEAN_SSH_KEY_ID
 ## Relevant blog posts
 1. [How I cut my cloud costs by 70%](https://hackandslash.blog/how-i-cut-my-cloud-costs-by-70-percent/?source=GitHub)
 2. [How to deploy ghost using Ansible, Terraform, and Ghost CLI](https://hackandslash.blog/how-to-deploy-ghost-using-ansible-terraform-and-ghost-cli/?source=GitHub)
+3. [How to update ghost using Ansible, and Ghost CLI](https://hackandslash.blog/updating-self-hosted-ghost-blog-using-ansible-and-ghost-cli/?source=GitHub)

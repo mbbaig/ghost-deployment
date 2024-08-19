@@ -4,12 +4,16 @@
   ansible.builtin.user:
     name: ghostuser
     group: sudo
+  tags:
+    - always
 
 - name: Copy a new sudoers file into place, after passing validation with visudo
   ansible.builtin.template:
     src: 100-ghost-user
     dest: /etc/sudoers.d/100-ghost-user
     mode: '440'
+  tags:
+    - always
 
 - name: Create a directory if it does not exist
   ansible.builtin.file:
@@ -18,13 +22,15 @@
     group: root
     state: directory
     mode: '755'
+  tags:
+    - always
 
 - name: Install Ghost
   become: true
   become_user: ghostuser
   ansible.builtin.shell: |
     /usr/local/lib/npm/bin/ghost \
-      install 5.87.1 \
+      install 5.89.1 \
       --no-prompt \
       --dir /var/www/hackandslash \
       --url https://hackandslash.blog \
@@ -44,3 +50,50 @@
       --process systemd
   args:
     executable: /bin/bash
+  tags:
+    - freshinstall
+
+- name: Stop Ghost
+  become: true
+  become_user: ghostuser
+  ansible.builtin.shell: |
+    /usr/local/lib/npm/bin/ghost \
+      stop \
+      hackandslash-blog \
+      --dir /var/www/hackandslash \
+      --verbose
+  args:
+    executable: /bin/bash
+  tags:
+    - update
+
+- name: Update Ghost
+  become: true
+  become_user: ghostuser
+  ansible.builtin.shell: |
+    /usr/local/lib/npm/bin/ghost \
+      update \
+      --v5 \
+      --no-prompt \
+      --auto-rollback \
+      --dir /var/www/hackandslash \
+      --verbose
+  args:
+    executable: /bin/bash
+  tags:
+    - update
+
+- name: Start Ghost
+  become: true
+  become_user: ghostuser
+  ansible.builtin.shell: |
+    /usr/local/lib/npm/bin/ghost \
+      start \
+      --enable \
+      --dir /var/www/hackandslash \
+      --verbose \
+      hackandslash-blog
+  args:
+    executable: /bin/bash
+  tags:
+    - update

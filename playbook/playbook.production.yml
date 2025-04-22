@@ -14,14 +14,15 @@
     - role: geerlingguy.mysql
       become: true
 
-
 - name: "Ghost play"
   hosts: webservers
   vars:
-    nodejs_version: "18.x"
+    nodejs_version: "20.x"
     nodejs_npm_global_packages:
       - name: ghost-cli
+        version: latest
   roles:
     - role: geerlingguy.nginx
     - role: geerlingguy.nodejs
+      tags: always
     - role: ghost

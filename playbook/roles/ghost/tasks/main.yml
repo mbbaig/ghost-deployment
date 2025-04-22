@@ -1,5 +1,4 @@
 ---
-
 - name: Add the user 'ghostuser' with a specific uid and a primary group of 'sudo'
   ansible.builtin.user:
     name: ghostuser
@@ -11,7 +10,7 @@
   ansible.builtin.template:
     src: 100-ghost-user
     dest: /etc/sudoers.d/100-ghost-user
-    mode: '440'
+    mode: "440"
   tags:
     - always
 
@@ -21,7 +20,7 @@
     owner: ghostuser
     group: root
     state: directory
-    mode: '755'
+    mode: "755"
   tags:
     - always
 
@@ -30,7 +29,7 @@
   become_user: ghostuser
   ansible.builtin.shell: |
     /usr/local/lib/npm/bin/ghost \
-      install 5.89.1 \
+      install 5.107 \
       --no-prompt \
       --dir /var/www/hackandslash \
       --url https://hackandslash.blog \
@@ -60,8 +59,7 @@
     /usr/local/lib/npm/bin/ghost \
       stop \
       hackandslash-blog \
-      --dir /var/www/hackandslash \
-      --verbose
+      --dir /var/www/hackandslash
   args:
     executable: /bin/bash
   tags:
@@ -76,8 +74,7 @@
       --v5 \
       --no-prompt \
       --auto-rollback \
-      --dir /var/www/hackandslash \
-      --verbose
+      --dir /var/www/hackandslash
   args:
     executable: /bin/bash
   tags:
@@ -91,7 +88,6 @@
       start \
       --enable \
       --dir /var/www/hackandslash \
-      --verbose \
       hackandslash-blog
   args:
     executable: /bin/bash
